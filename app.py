@@ -19,7 +19,7 @@ df['Transaction Date'] = pd.to_datetime(df['Transaction Date'])
 # Allow users to filter by Payment Method and Location.
 ith st.sidebar:
     # Add logo
-    st.image("logo.png", use_container_width=True)
+    st.image("Nature cafe logo contains cup or mug and forest….jpeg", use_container_width=True)
 
     # filters in sidebar
     payment_options = st.multiselect(
