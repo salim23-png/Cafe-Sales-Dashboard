@@ -11,7 +11,7 @@ st.title("Cafe Sales Dashboard")
 # load dataset
 df = pd.read_csv("cafe_sales_clean.csv")
 # only show the head and tail
-limited_df = pd.concat([pd.head(5), pd.tail(5)])
+limited_df = pd.concat([df.head(5), df.tail(5)])
 # interactive dataframe
 st.dataframe(df)
 # pie chart
