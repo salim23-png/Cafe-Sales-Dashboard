@@ -12,20 +12,35 @@ st.title("Cafe Sales Dashboard")
 df = pd.read_csv("cafe_sales_clean.csv")
 # interactive dataframe
 st.dataframe(df)
-# add the sidebar
-st.sidebar.checkbox("Choose Payment Method", df["Payment Method"].unique())
-st.sidebar.checkbox("Choose Location", df["Location"].unique())
+# add the sidebar for payment method and location
+payment_options = st.sidebar.multiselect(
+    "Choose Payment Method",
+    options=df["Payment Method"].unique(),
+    default=df["Payment Method"].unique()
+)
+location_options = st.sidebar.multiselect(
+    "Choose Location",
+    options=df["Location"].unique(),
+    default=df["Location"].unique()
+)
+# filtering the dataframe for user choices
+filtered_df = df[
+    (df["Payment Method"].isin(payment_options)) &
+    (df["Location"].isin(location_options))
+]
 # pie chart
 counts = df["Item"].value_counts().reset_index()
 counts.columns = ["Item", "Count"]
-pie_fig = px.pie(counts, values='Count', names='Item', hole=.3, color_discrete_map=pc.qualitative.Pastel)
-st.plotly_chart(pie_fig)
+pie_fig = px.pie(counts, values='Count', 
+                 names='Item', hole=.3, 
+                 color_discrete_map=pc.qualitative.Pastel)
+st.plotly_chart(pie_fig, use_container_width=True)
 # line chart
 df['Transaction Date'] = pd.to_datetime(df['Transaction Date']) # make sure the type as datetime
 daily_spent = df.groupby(df['Transaction Date'].dt.date)['Total Spent'].sum().reset_index()
 daily_spent.columns = ['Transaction Date', 'Total Spent']
 line_fig = px.line(daily_spent, x="Transaction Date", y="Total Spent")
-st.plotly_chart(line_fig)
+st.plotly_chart(line_fig, use_container_width=True)
 
 st.balloons()
 
