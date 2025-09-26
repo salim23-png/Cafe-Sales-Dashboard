@@ -17,17 +17,21 @@ df['Transaction Date'] = pd.to_datetime(df['Transaction Date'])
 
 # --- Sidebar filters ---
 # Allow users to filter by Payment Method and Location.
-payment_options = st.sidebar.multiselect(
-    "Choose Payment Method",
-    options=df["Payment Method"].unique(),
-    default=df["Payment Method"].unique()
-)
-location_options = st.sidebar.multiselect(
-    "Choose Location",
-    options=df["Location"].unique(),
-    default=df["Location"].unique()
-)
+ith st.sidebar:
+    # Add logo
+    st.image("logo.png", use_container_width=True)
 
+    # filters in sidebar
+    payment_options = st.multiselect(
+        "Choose Payment Method",
+        options=df["Payment Method"].unique(),
+        default=df["Payment Method"].unique()
+    )
+    location_options = st.multiselect(
+        "Choose Location",
+        options=df["Location"].unique(),
+        default=df["Location"].unique()
+    )
 # --- Apply filters to the dataframe ---
 filtered_df = df[
     (df["Payment Method"].isin(payment_options)) &
