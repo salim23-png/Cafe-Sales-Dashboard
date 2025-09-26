@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.colors as pc
 
 # set the page
 st.set_page_config(layout="wide", page_title="Sales Dashboard")
