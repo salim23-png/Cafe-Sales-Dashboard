@@ -4,15 +4,19 @@ import streamlit as st
 import plotly.express as px
 import plotly.colors as pc
 
-# set the page
+# --- Page configuration ---
 st.set_page_config(layout="wide", page_title="Sales Dashboard")
-# set the title page
+
+# --- Title ---
 st.title("Cafe Sales Dashboard")
-# load dataset
+
+# --- Load dataset ---
+# Read the CSV file and convert the Transaction Date column to datetime once.
 df = pd.read_csv("cafe_sales_clean.csv")
-# interactive dataframe
-st.dataframe(df)
-# add the sidebar for payment method and location
+df['Transaction Date'] = pd.to_datetime(df['Transaction Date'])
+
+# --- Sidebar filters ---
+# Allow users to filter by Payment Method and Location.
 payment_options = st.sidebar.multiselect(
     "Choose Payment Method",
     options=df["Payment Method"].unique(),
@@ -23,24 +27,48 @@ location_options = st.sidebar.multiselect(
     options=df["Location"].unique(),
     default=df["Location"].unique()
 )
-# filtering the dataframe for user choices
+
+# --- Apply filters to the dataframe ---
 filtered_df = df[
     (df["Payment Method"].isin(payment_options)) &
     (df["Location"].isin(location_options))
-]
-# pie chart
-counts = df["Item"].value_counts().reset_index()
-counts.columns = ["Item", "Count"]
-pie_fig = px.pie(counts, values='Count', 
-                 names='Item', hole=.3, 
-                 color_discrete_map=pc.qualitative.Pastel)
-st.plotly_chart(pie_fig, use_container_width=True)
-# line chart
-df['Transaction Date'] = pd.to_datetime(df['Transaction Date']) # make sure the type as datetime
-daily_spent = df.groupby(df['Transaction Date'].dt.date)['Total Spent'].sum().reset_index()
-daily_spent.columns = ['Transaction Date', 'Total Spent']
-line_fig = px.line(daily_spent, x="Transaction Date", y="Total Spent")
-st.plotly_chart(line_fig, use_container_width=True)
+].copy()  # .copy() avoids SettingWithCopy warnings
 
+# --- Create two columns for side-by-side charts ---
+col1, col2 = st.columns(2)
+
+# --- Pie chart: distribution of items sold ---
+with col1:
+    counts = filtered_df["Item"].value_counts().reset_index()
+    counts.columns = ["Item", "Count"]
+    pie_fig = px.pie(
+        counts,
+        values='Count',
+        names='Item',
+        hole=.3,
+        color_discrete_sequence=pc.qualitative.Pastel  # use pastel color palette
+    )
+    st.plotly_chart(pie_fig, use_container_width=True)
+
+# --- Line chart: total spending per day ---
+with col2:
+    daily_spent = (
+        filtered_df
+        .groupby(filtered_df['Transaction Date'].dt.date)['Total Spent']
+        .sum()
+        .reset_index()
+    )
+    daily_spent.columns = ['Transaction Date', 'Total Spent']
+    line_fig = px.line(
+        daily_spent,
+        x="Transaction Date",
+        y="Total Spent",
+        markers=True  # optional: add markers to highlight each point
+    )
+    st.plotly_chart(line_fig, use_container_width=True)
+
+# --- Show the filtered dataframe below the charts ---
+st.dataframe(filtered_df)
+
+# --- Celebration animation ---
 st.balloons()
-
