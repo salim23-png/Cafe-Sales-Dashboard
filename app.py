@@ -13,7 +13,7 @@ df = pd.read_csv("cafe_sales_clean.csv")
 # only show the head and tail
 limited_df = pd.concat([df.head(5), df.tail(5)])
 # interactive dataframe
-st.dataframe(df.style.highlight_max(axis=0))
+st.dataframe(df)
 # pie chart
 counts = df["Item"].value_counts().reset_index()
 counts.columns = ["Item", "Count"]
